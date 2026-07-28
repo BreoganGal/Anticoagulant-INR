@@ -1,0 +1,6 @@
+{
+  "name": "Anticoagulant INR",
+  "description": "Seguimiento de medicación anticoagulante, pauta diaria, pruebas e historial de INR.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
