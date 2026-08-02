@@ -685,6 +685,7 @@ fun AjustesScreen(
 
         Spacer(modifier = Modifier.height(14.dp))
 
+        if (settings.appMode != "SIMPLE") {
         // SECTION 3: APARIENCIA
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -739,8 +740,11 @@ fun AjustesScreen(
 
         Spacer(modifier = Modifier.height(14.dp))
 
+        }
+        Spacer(modifier = Modifier.height(14.dp))
+        if (settings.appMode != "SIMPLE") {
         // SECTION 4: IDIOMA
-        val currLangDisplay = AppLanguage.entries.firstOrNull { it.code == selectedLang }?.displayName ?: "Español"
+        val currLangDisplay = if (selectedLang == "SYSTEM") LanguageManager.getString("idioma_sistema", lang) else AppLanguage.entries.firstOrNull { it.code == selectedLang }?.displayName ?: "Español"
 
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -772,7 +776,8 @@ fun AjustesScreen(
                 if (expandedMenuId == "lang") {
                     Spacer(modifier = Modifier.height(10.dp))
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        AppLanguage.entries.forEach { appLang ->
+                        val sortedLangs = listOf(AppLanguage.SYSTEM) + AppLanguage.entries.filter { it != AppLanguage.SYSTEM }.sortedBy { it.displayName }
+                        sortedLangs.forEach { appLang ->
                             androidx.compose.material3.HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant, thickness = 0.8.dp)
                             Row(
                                 modifier = Modifier
@@ -787,7 +792,7 @@ fun AjustesScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = appLang.displayName,
+                                    text = if (appLang.code == "SYSTEM") LanguageManager.getString("idioma_sistema", lang) else appLang.displayName,
                                     fontWeight = if (selectedLang == appLang.code) FontWeight.Bold else FontWeight.Normal,
                                     color = if (selectedLang == appLang.code) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                                     fontSize = 14.sp
@@ -809,6 +814,8 @@ fun AjustesScreen(
 
         Spacer(modifier = Modifier.height(14.dp))
 
+        }
+        Spacer(modifier = Modifier.height(14.dp))
         // SECTION 5: DATOS Y FORMATO DE FECHA
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -817,50 +824,106 @@ fun AjustesScreen(
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
         ) {
             Column(modifier = Modifier.padding(18.dp)) {
+                if (settings.appMode != "SIMPLE") {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { expandedMenuId = if (expandedMenuId == "dateformat") null else "dateformat" },
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = LanguageManager.getString("formato_fecha", lang), fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = dateFormat, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = if (expandedMenuId == "dateformat") androidx.compose.material.icons.Icons.Default.KeyboardArrowUp else androidx.compose.material.icons.Icons.Default.KeyboardArrowDown,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    if (expandedMenuId == "dateformat") {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            listOf("DD/MM/YYYY", "YYYY-MM-DD", "MM/DD/YYYY", "d/m/y").forEach { fmt ->
+                                androidx.compose.material3.HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant, thickness = 0.8.dp)
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            dateFormat = fmt
+                                            expandedMenuId = null
+                                            onSaveSettings(settings.copy(dateFormat = fmt))
+                                        }
+                                        .padding(vertical = 12.dp, horizontal = 4.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = fmt,
+                                        fontWeight = if (dateFormat == fmt) FontWeight.Bold else FontWeight.Normal,
+                                        color = if (dateFormat == fmt) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                                        fontSize = 14.sp
+                                    )
+                                    if (dateFormat == fmt) {
+                                        Icon(
+                                            imageVector = androidx.compose.material.icons.Icons.Default.Check,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(18.dp))
+                    androidx.compose.material3.HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant, thickness = 0.8.dp)
+                    Spacer(modifier = Modifier.height(18.dp))
+                }
+                
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { expandedMenuId = if (expandedMenuId == "dateformat") null else "dateformat" },
+                        .clickable { expandedMenuId = if (expandedMenuId == "appmode") null else "appmode" },
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = LanguageManager.getString("formato_fecha", lang), fontWeight = FontWeight.Bold, fontSize = 14.sp)
-
+                    Text(text = LanguageManager.getString("modo_aplicacion", lang), fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = dateFormat, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
+                        Text(text = if (settings.appMode == "SIMPLE") LanguageManager.getString("simple", lang) else LanguageManager.getString("avanzada", lang), fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
                         Spacer(modifier = Modifier.width(4.dp))
                         Icon(
-                            imageVector = if (expandedMenuId == "dateformat") androidx.compose.material.icons.Icons.Default.KeyboardArrowUp else androidx.compose.material.icons.Icons.Default.KeyboardArrowDown,
+                            imageVector = if (expandedMenuId == "appmode") androidx.compose.material.icons.Icons.Default.KeyboardArrowUp else androidx.compose.material.icons.Icons.Default.KeyboardArrowDown,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
-
-                if (expandedMenuId == "dateformat") {
+                if (expandedMenuId == "appmode") {
                     Spacer(modifier = Modifier.height(10.dp))
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        listOf("DD/MM/YYYY", "YYYY-MM-DD", "MM/DD/YYYY", "d/m/y").forEach { fmt ->
+                        listOf("SIMPLE", "ADVANCED").forEach { modeStr ->
                             androidx.compose.material3.HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant, thickness = 0.8.dp)
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        dateFormat = fmt
                                         expandedMenuId = null
-                                        onSaveSettings(settings.copy(dateFormat = fmt))
+                                        onSaveSettings(settings.copy(appMode = modeStr))
                                     }
                                     .padding(vertical = 12.dp, horizontal = 4.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = fmt,
-                                    fontWeight = if (dateFormat == fmt) FontWeight.Bold else FontWeight.Normal,
-                                    color = if (dateFormat == fmt) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                                    text = if (modeStr == "SIMPLE") LanguageManager.getString("simple", lang) else LanguageManager.getString("avanzada", lang),
+                                    fontWeight = if (settings.appMode == modeStr) FontWeight.Bold else FontWeight.Normal,
+                                    color = if (settings.appMode == modeStr) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                                     fontSize = 14.sp
                                 )
-                                if (dateFormat == fmt) {
+                                if (settings.appMode == modeStr) {
                                     Icon(
                                         imageVector = androidx.compose.material.icons.Icons.Default.Check,
                                         contentDescription = null,
@@ -874,9 +937,7 @@ fun AjustesScreen(
                 }
             }
         }
-
         Spacer(modifier = Modifier.height(14.dp))
-
         // SECTION 6: DATOS Y PRIVACIDAD
         Text(
             text = "DATOS Y PRIVACIDAD",
@@ -980,8 +1041,8 @@ fun AjustesScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Versión de la aplicación", fontSize = 14.sp)
-                    Text(text = "1.0", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(text = LanguageManager.getString("version_aplicacion", lang), fontSize = 14.sp)
+                    Text(text = "0.2", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }

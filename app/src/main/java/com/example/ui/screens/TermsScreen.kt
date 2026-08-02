@@ -69,7 +69,7 @@ fun TermsScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = painterResource(id = R.drawable.app_logo),
+                painter = painterResource(id = com.example.core.common.R.drawable.app_logo),
                 contentDescription = "App Logo",
                 modifier = Modifier.size(100.dp)
             )

@@ -100,7 +100,8 @@ fun RegistroScreen(
     ) {
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Subtab Row: HISTORIAL vs ESTADÍSTICAS
+// Subtab Row: HISTORIAL vs ESTADÍSTICAS
+        if (settings.appMode != "SIMPLE") {
         TabRow(
             selectedTabIndex = selectedSubTab,
             containerColor = Color.Transparent,
@@ -137,6 +138,7 @@ fun RegistroScreen(
             )
         }
 
+        }
         Spacer(modifier = Modifier.height(14.dp))
 
         if (selectedSubTab == 0) {

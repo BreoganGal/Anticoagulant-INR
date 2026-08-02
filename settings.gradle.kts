@@ -24,4 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Anticoagulant INR"
 
-include(":app")
+include(":app", ":data", ":ui", ":feature:calendario", ":core:presentation", ":core:common")

@@ -176,16 +176,6 @@ fun MainAppContent(viewModel: MainViewModel) {
 
     val daysUntilInr = viewModel.getDaysUntilNextInr()
 
-    if (!settings.termsAccepted) {
-        TermsScreen(
-            isFirstLaunch = true,
-            onAccept = {
-                viewModel.updateSettings(settings.copy(termsAccepted = true))
-            }
-        )
-        return
-    }
-    
     if (showTermsScreen) {
         TermsScreen(
             isFirstLaunch = false,
@@ -195,40 +185,33 @@ fun MainAppContent(viewModel: MainViewModel) {
         return
     }
 
-    if (settings.termsAccepted && !settings.tourCompleted) {
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { viewModel.updateSettings(settings.copy(tourCompleted = true)) },
-            title = {
-                Text("¡Bienvenido a Anticoagulant INR!", fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+    if (!settings.tourCompleted) {
+        com.example.ui.screens.SetupWizardScreen(
+            lang = lang,
+            onFinish = { mode, med, time ->
+                viewModel.updateSettings(settings.copy(
+                    tourCompleted = true,
+                    appMode = mode,
+                    medicationName = if (med == "Sintrom" || med == "Warfarina" || med == "Coumadin" || med == "Marevan" || med == "Marcoumar" || med == "Jantoven") med else "Personaliza otro antagonista de la vitamina K (AVK)",
+                    customMedicationName = if (med == "Sintrom" || med == "Warfarina" || med == "Coumadin" || med == "Marevan" || med == "Marcoumar" || med == "Jantoven") "" else med,
+                    reminderTime = time
+                ))
             },
-            text = {
-                androidx.compose.foundation.layout.Column {
-                    Text("Para empezar, te recomendamos:")
-                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.padding(top = 8.dp))
-                    Text("1. Ve a la pestaña de Ajustes (engranaje) para marcar tu hora de toma habitual y tu medicación (Sintrom, Aldocumar...).")
-                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.padding(top = 8.dp))
-                    Text("2. En el Calendario, podrás añadir tus tomas programadas manualmente o importar una pauta médica.")
-                }
+            onSkip = { mode ->
+                viewModel.updateSettings(settings.copy(
+                    tourCompleted = true,
+                    appMode = mode
+                ))
             },
-            confirmButton = {
-                androidx.compose.material3.Button(
-                    onClick = {
-                        viewModel.updateSettings(settings.copy(tourCompleted = true))
-                        selectedTab = 3 // go to Ajustes
-                    },
-                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                ) {
-                    Text("Ir a Ajustes")
-                }
-            },
-            dismissButton = {
-                androidx.compose.material3.OutlinedButton(
-                    onClick = { viewModel.updateSettings(settings.copy(tourCompleted = true)) }
-                ) {
-                    Text("Omitir")
-                }
+            onImportPauta = { mode ->
+                viewModel.updateSettings(settings.copy(
+                    tourCompleted = true,
+                    appMode = mode
+                ))
+                showImportPautaDialog = true
             }
         )
+        return
     }
 
     Scaffold(

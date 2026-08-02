@@ -85,19 +85,27 @@ fun InicioScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 androidx.compose.foundation.Image(
-                    painter = androidx.compose.ui.res.painterResource(id = com.example.R.drawable.app_logo),
+                    painter = androidx.compose.ui.res.painterResource(id = com.example.core.common.R.drawable.app_logo),
                     contentDescription = "Logo Anticoagulant INR",
                     modifier = Modifier
                         .height(32.dp)
                         .padding(end = 8.dp),
                     contentScale = androidx.compose.ui.layout.ContentScale.Fit
                 )
-                Text(
-                    text = "Anticoagulant INR",
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                Column {
+                    Text(
+                        text = LanguageManager.getString("bienvenido_a", lang),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "Anticoagulant INR",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
 
             Text(
